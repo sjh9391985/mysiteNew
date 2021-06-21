@@ -26,6 +26,8 @@ public class FileuploadConfig extends WebMvcConfigurerAdapter{
 		
 		return multipartResolver;
 	}
+	
+	
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
