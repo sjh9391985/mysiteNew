@@ -30,6 +30,7 @@ import com.douzone.mysite.security.LogoutInterceptor;
 @PropertySource("classpath:com/douzone/mysite/config/WebConfig.properties")
 public class WebConfig implements WebMvcConfigurer {
 	
+
 	@Autowired
 	private Environment env;
 	
@@ -64,17 +65,17 @@ public class WebConfig implements WebMvcConfigurer {
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry
 			.addInterceptor(loginInterceptor())
-			.addPathPatterns("/user/auth");
+			.addPathPatterns(env.getProperty("security.auth-url"));
 		
 		registry
 			.addInterceptor(logoutInterceptor())
-			.addPathPatterns("/user/logout");
+			.addPathPatterns(env.getProperty("security.logout"));
 		
 		registry
 			.addInterceptor(authInterceptor())
 			.addPathPatterns("/**")
-			.excludePathPatterns("/user/auth")
-			.excludePathPatterns("/user/logout")
+			.excludePathPatterns(env.getProperty("security.auth-url"))
+			.excludePathPatterns(env.getProperty("security.logout"))
 			.excludePathPatterns("/assets/**");
 	}
 	
@@ -118,5 +119,5 @@ public class WebConfig implements WebMvcConfigurer {
 		registry
 			.addResourceHandler(env.getProperty("fileupload.resourceMapping"))
 			.addResourceLocations("file:" + env.getProperty("fileupload.uploadLocation"));
-	}
+	}	
 }
