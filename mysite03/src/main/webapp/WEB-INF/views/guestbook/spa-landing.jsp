@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <script type="text/javascript" src="${pageContext.request.contextPath }/assets/js/jquery/jquery-1.9.0.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="${pageContext.request.contextPath }/ejs/ejs.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 /* 
@@ -38,33 +39,39 @@
  	   삭제가 성공한 경우(no > 0), ex) data-no=10인 li element를 삭제
  	렌더링 참고: ch08/test/gb/ex3
  	
-*/						  //mode default "true" 
-var render = function(vo ,mode){
- 		html =
- 			"<li data-no='" + vo.no + "'>" + 
- 				"<strong>" + vo.name + "</strong>" +
- 				"<p>" + vo.message + "</p>" +
- 				"<strong></strong>" + 
- 				"<a href='' data-no='" + vo.no + "'>삭제</a>" + 
- 			"</li>";
- 		if(mode){
- 			$("#list-guestbook").append(html);		
- 		}
- 		else{
- 			$("#list-guestbook").prepend(html);	
- 		}
- 	}
+*/
+var lastScrollTop = 0;
+$(function(){
+	$(window).scroll(function(){
+		var $window = $(this);
+		var scrollTop = $window.scrollTop(); // 스크롤의 현재 위치
+		var windowHeight = $window.height(); // 윈도우창 가변높이 
+		var documentHeight = $(document).height(); // 도큐먼트 높이로 고정
+		if(scrollTop > lastScrollTop){
+			if(scrollTop >= documentHeight - windowHeight){
+				var no = $("#list-guestbook li:last").data("no");
+				fetch(no);
+			}
+		}
+	})
+})
 
-
+var listItemEJS = new EJS({
+	url: "${pageContext.request.contextPath }/ejs/listitem-template.ejs"
+ });
+ 
+var listEJS = new EJS({
+	url: "${pageContext.request.contextPath }/ejs/list-template.ejs"
+});
+ 	   
 var fetch = function(no){
 	$.ajax({
 		url: "${pageContext.request.contextPath }/guestbook/api/list/"+no,
 		dataType: "json",  // 받을 때 포맷
 		type: "get",      // 요청 method  
 		success: function(response){
-			response.data.forEach(function(e){
-				render(e, true)
-			});
+			var html = listEJS.render(response);
+			$("#list-guestbook").append(html);
 		}
 	});
 }
@@ -116,8 +123,8 @@ var add = function(){
 			contentType: "application/json",   
 			data: JSON.stringify(vo),
 			success: function(response){
-				var vo = response.data;
-				render(vo, false);
+				var html = listItemEJS.render(response.data);
+				$("#list-guestbook").prepend(html);
 			}
 		});		
 		
