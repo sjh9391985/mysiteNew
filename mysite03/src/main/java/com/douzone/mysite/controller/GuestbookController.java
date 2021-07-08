@@ -48,6 +48,7 @@ public class GuestbookController {
 		return "redirect:/guestbook";
 	}
 	
+	/* spa page */
 	@RequestMapping("/spa")
 	public String spaLanding(){
 		return "guestbook/spa-landing";

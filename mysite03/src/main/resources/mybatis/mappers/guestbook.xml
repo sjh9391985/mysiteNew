@@ -1,35 +1,55 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="guestbook">
-
+	<!-- 방명록 -->
 	<select id="findAll" resultType="guestbookvo">
-	
-	<![CDATA[
+		<![CDATA[
 		select no, name, date_format(reg_date, '%Y/%m/%d %H:%i:%s') as reg_date, message
-		from guestbook order by reg_date desc
-	]]>
-	
+		from guestbook
+	    order by reg_date desc
+	  	]]>
+	</select>
+
+	<!-- 방명록SPA -->
+	<select id="findDefault" resultType="guestbookvo" >
+		<![CDATA[
+			select no, name, password, message, reg_date 
+			from guestbook 
+			order by no desc limit 0,3;
+		]]>
 	</select>
 	
+	<select id="findByNo" resultType="guestbookvo" parameterType="integer">
+		<![CDATA[
+			select no, name, password, message, reg_date 
+			from guestbook
+			where no < #{no} 
+			order by no desc limit 0,3;
+			]]>
+	</select>
+
+
+	<!-- 방명록 등록 -->
 	<insert id="insert" parameterType="guestbookvo">
 		<![CDATA[
-			insert 
-			into guestbook 
-			values (null, #{name }, #{password }, #{message }, now())
-		]]>
-		
+		insert
+		  into guestbook
+		values (null, #{name }, #{password }, #{message }, now())	
+	  	]]>
 		<selectKey keyProperty="no" resultType="long" order="AFTER">
-		<![CDATA[
-		select last_insert_id()
-		]]>
+			<![CDATA[
+		  	select last_insert_id()
+	  		]]>
 		</selectKey>
-		
 	</insert>
-	
+
+	<!-- 방명록 삭제 -->
 	<delete id="delete" parameterType="guestbookvo">
 		<![CDATA[
-		delete from guestbook where no=#{no} and password=#{password}
-		]]>
+		delete
+		  from guestbook
+		 where no=#{no }
+		   and password=#{password}
+	  	]]>
 	</delete>
-	
 </mapper>

@@ -16,7 +16,17 @@ public class GuestBookRepository {
 	
 	public List<GuestBookVo> findAll() {
 		return sqlSession.selectList("guestbook.findAll");
-
+	}
+	
+	
+	public List<GuestBookVo> findByNo(Long no) {
+		if(no == 0) {
+			return sqlSession.selectList("guestbook.findDefault");	
+		}else {
+			return sqlSession.selectList("guestbook.findByNo", no);
+		}
+		
+		
 	}
 	
 	public boolean insert(GuestBookVo vo) {
